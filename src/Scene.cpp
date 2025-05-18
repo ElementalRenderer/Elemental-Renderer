@@ -61,13 +61,11 @@ bool Scene::removeMesh(size_t index) {
     if (index >= m_meshes.size()) {
         return false;
     }
-    
-    // Remove from name map if it exists
+
     for (auto it = m_meshNameMap.begin(); it != m_meshNameMap.end(); ) {
         if (it->second == index) {
             it = m_meshNameMap.erase(it);
         } else {
-            // Update indices greater than the removed one
             if (it->second > index) {
                 it->second--;
             }
@@ -132,13 +130,11 @@ bool Scene::removeLight(size_t index) {
     if (index >= m_lights.size()) {
         return false;
     }
-    
-    // Remove from name map if it exists
+
     for (auto it = m_lightNameMap.begin(); it != m_lightNameMap.end(); ) {
         if (it->second == index) {
             it = m_lightNameMap.erase(it);
         } else {
-            // Update indices greater than the removed one
             if (it->second > index) {
                 it->second--;
             }
@@ -191,11 +187,9 @@ void Scene::clear() {
 
 std::shared_ptr<Scene> Scene::createTestScene(const std::string& name) {
     auto scene = std::make_shared<Scene>(name);
-    
-    // Set ambient light
+
     scene->setAmbientLight(glm::vec3(0.05f, 0.05f, 0.1f));
-    
-    // Create a floor plane
+
     auto floorMesh = Mesh::createPlane(20.0f, 20.0f);
     auto floorMaterial = Material::createPBRMaterial(
         glm::vec3(0.8f, 0.8f, 0.9f),  // albedo (light gray-blue)
@@ -204,8 +198,7 @@ std::shared_ptr<Scene> Scene::createTestScene(const std::string& name) {
     );
     floorMesh->setMaterial(floorMaterial);
     scene->addMesh(floorMesh, "Floor");
-    
-    // Create some cubes
+
     for (int i = 0; i < 5; ++i) {
         auto cubeMesh = Mesh::createCube(0.8f);
         auto cubeMaterial = Material::createPBRMaterial(
@@ -214,20 +207,17 @@ std::shared_ptr<Scene> Scene::createTestScene(const std::string& name) {
             0.2f                                       // roughness
         );
         cubeMesh->setMaterial(cubeMaterial);
-        
-        // Position the cubes in a line
+
         float x = -4.0f + i * 2.0f;
         float y = 0.4f;  // Half height of cube
         float z = 0.0f;
-        
-        // In a real implementation, we would set the transform of the mesh here
+
         // cubeMesh->setPosition(glm::vec3(x, y, z));
         
         std::string name = "Cube_" + std::to_string(i);
         scene->addMesh(cubeMesh, name);
     }
-    
-    // Create some spheres
+
     for (int i = 0; i < 3; ++i) {
         auto sphereMesh = Mesh::createSphere(0.6f);
         auto sphereMaterial = Material::createPBRMaterial(
@@ -236,28 +226,24 @@ std::shared_ptr<Scene> Scene::createTestScene(const std::string& name) {
             0.5f                                       // roughness
         );
         sphereMesh->setMaterial(sphereMaterial);
-        
-        // Position the spheres
+
         float x = -2.0f + i * 2.0f;
         float y = 0.6f;  // Sphere radius
         float z = -3.0f;
-        
-        // In a real implementation, we would set the transform of the mesh here
+
         // sphereMesh->setPosition(glm::vec3(x, y, z));
         
         std::string name = "Sphere_" + std::to_string(i);
         scene->addMesh(sphereMesh, name);
     }
-    
-    // Add a directional light (sun light)
+
     auto sunLight = Light::createDirectionalLight(
         glm::vec3(-0.5f, -1.0f, -0.3f),  // direction
         glm::vec3(1.0f, 0.95f, 0.8f),     // color (warm sunlight)
         1.2f                              // intensity
     );
     scene->addLight(sunLight, "Sun");
-    
-    // Add a point light
+
     auto pointLight = Light::createPointLight(
         glm::vec3(3.0f, 2.0f, 0.0f),    // position
         glm::vec3(0.0f, 1.0f, 0.0f),    // color (green)
@@ -265,8 +251,7 @@ std::shared_ptr<Scene> Scene::createTestScene(const std::string& name) {
         10.0f                           // range
     );
     scene->addLight(pointLight, "GreenPointLight");
-    
-    // Add a spot light
+
     auto spotLight = Light::createSpotLight(
         glm::vec3(-2.0f, 3.0f, 2.0f),   // position
         glm::vec3(0.5f, -1.0f, -0.5f),  // direction

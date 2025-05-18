@@ -23,22 +23,19 @@ Shader::~Shader() {
 
 bool Shader::compile(const std::string& vertexSource, const std::string& fragmentSource, const std::string& geometrySource) {
     unsigned int vertexShader, fragmentShader, geometryShader = 0;
-    
-    // Vertex Shader
+
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     const char* vShaderCode = vertexSource.c_str();
     glShaderSource(vertexShader, 1, &vShaderCode, NULL);
     glCompileShader(vertexShader);
     checkCompileErrors(vertexShader, "VERTEX");
-    
-    // Fragment Shader
+
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     const char* fShaderCode = fragmentSource.c_str();
     glShaderSource(fragmentShader, 1, &fShaderCode, NULL);
     glCompileShader(fragmentShader);
     checkCompileErrors(fragmentShader, "FRAGMENT");
-    
-    // Geometry Shader (if provided)
+
     if (!geometrySource.empty()) {
         geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
         const char* gShaderCode = geometrySource.c_str();
@@ -46,8 +43,7 @@ bool Shader::compile(const std::string& vertexSource, const std::string& fragmen
         glCompileShader(geometryShader);
         checkCompileErrors(geometryShader, "GEOMETRY");
     }
-    
-    // Shader Program
+
     m_id = glCreateProgram();
     glAttachShader(m_id, vertexShader);
     glAttachShader(m_id, fragmentShader);
@@ -119,31 +115,22 @@ std::shared_ptr<Shader> Shader::createFromFiles(const std::string& vertexPath, c
     std::ifstream vShaderFile;
     std::ifstream fShaderFile;
     std::ifstream gShaderFile;
-    
-    // Ensure ifstream objects can throw exceptions
+
     vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     
     try {
-        // Open files
+
         vShaderFile.open(vertexPath);
         fShaderFile.open(fragmentPath);
-        
-        // Read file's buffer contents into streams
         std::stringstream vShaderStream, fShaderStream;
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
-        
-        // Close file handlers
         vShaderFile.close();
         fShaderFile.close();
-        
-        // Convert streams to strings
         vertexCode = vShaderStream.str();
         fragmentCode = fShaderStream.str();
-        
-        // Load geometry shader if path is provided
         if (!geometryPath.empty()) {
             gShaderFile.open(geometryPath);
             std::stringstream gShaderStream;

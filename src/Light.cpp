@@ -10,7 +10,6 @@
 
 namespace ElementalRenderer {
 
-// Base Light implementation
 Light::Light()
     : m_type(LightType::DIRECTIONAL)
     , m_color(1.0f, 1.0f, 1.0f)
@@ -107,7 +106,6 @@ std::shared_ptr<Light> Light::createSpotLight(
     return light;
 }
 
-// DirectionalLight implementation
 DirectionalLight::DirectionalLight()
     : Light(LightType::DIRECTIONAL)
     , m_direction(0.0f, -1.0f, 0.0f)
@@ -130,7 +128,6 @@ glm::vec3 DirectionalLight::getDirection() const {
     return m_direction;
 }
 
-// PointLight implementation
 PointLight::PointLight()
     : Light(LightType::POINT)
     , m_position(0.0f)
@@ -186,8 +183,7 @@ SpotLight::SpotLight(const glm::vec3& position, const glm::vec3& direction,
 {
     setColor(color);
     setIntensity(intensity);
-    
-    // Ensure inner angle is smaller than outer angle
+
     if (m_innerAngle > m_outerAngle) {
         std::cerr << "Warning: Inner angle is greater than outer angle. Swapping values." << std::endl;
         std::swap(m_innerAngle, m_outerAngle);
@@ -220,8 +216,7 @@ float SpotLight::getRange() const {
 
 void SpotLight::setInnerAngle(float degrees) {
     m_innerAngle = degrees;
-    
-    // Ensure inner angle is smaller than outer angle
+
     if (m_innerAngle > m_outerAngle) {
         m_innerAngle = m_outerAngle;
     }
@@ -233,8 +228,7 @@ float SpotLight::getInnerAngle() const {
 
 void SpotLight::setOuterAngle(float degrees) {
     m_outerAngle = degrees;
-    
-    // Ensure outer angle is larger than inner angle
+
     if (m_outerAngle < m_innerAngle) {
         m_outerAngle = m_innerAngle;
     }

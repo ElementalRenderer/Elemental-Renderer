@@ -8,7 +8,6 @@
 
 namespace ElementalRenderer {
 
-// Define the static shader source constants
 const char* PostProcessShader::s_vertexShaderSource = R"(
 #version 410 core
 layout (location = 0) in vec3 aPos;
@@ -36,6 +35,5 @@ void main() {
 }
 )";
 
-// Implementation of the PostProcessShader class methods would go here
 
 } // namespace ElementalRenderer
