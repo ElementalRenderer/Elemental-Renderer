@@ -43,9 +43,7 @@ find_package(glm CONFIG REQUIRED)
 # --------------------------------------------------------------------------------
 #                         Locate files (change as needed).
 # --------------------------------------------------------------------------------
-set(SOURCES          # All .cpp files in src/
-    src/example.cpp
-)
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)  # Automatically include all .cpp files in src/
 set(TESTFILES        # All .cpp files in tests/
     tests/main.cpp
 )
