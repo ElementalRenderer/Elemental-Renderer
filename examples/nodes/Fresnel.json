@@ -1,0 +1,34 @@
+{
+    "name": "Fresnel",
+    "category": "Lighting",
+    "description": "Calculates Fresnel effect based on view direction and normal",
+    "inputs": [
+        {
+            "name": "Normal",
+            "type": "vec3",
+            "defaultValue": "float3(0, 0, 1)"
+        },
+        {
+            "name": "ViewDirection",
+            "type": "vec3",
+            "defaultValue": "float3(0, 0, 1)"
+        },
+        {
+            "name": "Power",
+            "type": "float",
+            "defaultValue": "5.0"
+        },
+        {
+            "name": "BaseReflectivity",
+            "type": "float",
+            "defaultValue": "0.04"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "Fresnel",
+            "type": "float"
+        }
+    ],
+    "code": "// Calculate Fresnel effect (Schlick approximation)\nfloat3 normalizedNormal = normalize({{Normal}});\nfloat3 normalizedViewDir = normalize({{ViewDirection}});\nfloat nDotV = max(dot(normalizedNormal, normalizedViewDir), 0.0);\nfloat {{Fresnel_out}} = {{BaseReflectivity}} + (1.0 - {{BaseReflectivity}}) * pow(1.0 - nDotV, {{Power}});\n"
+}

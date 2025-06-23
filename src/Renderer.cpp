@@ -1,115 +1,151 @@
 #include "../include/Renderer.h"
+#include "../include/ElementalRenderer.h"
 #include <iostream>
 #include <glad/glad.h>  // OpenGL loader... should be included before other OpenGL-related headers
 #include <GLFW/glfw3.h>
 
-Renderer::Renderer()
-    : viewportWidth(800), viewportHeight(600), camera(nullptr) {
+namespace ElementalRenderer {
 
-    clearColor[0] = 0.2f;
-    clearColor[1] = 0.2f;
-    clearColor[2] = 0.2f;
-    clearColor[3] = 1.0f;
+// Initialize static members
+bool Renderer::s_initialized = false;
+int Renderer::s_viewportWidth = 800;
+int Renderer::s_viewportHeight = 600;
+float Renderer::s_clearColor[4] = {0.2f, 0.2f, 0.2f, 1.0f};
+std::unique_ptr<StyleShaderManager> Renderer::s_styleShaderManager = nullptr;
 
-    styleShaderManager = std::make_unique<StyleShaderManager>();
+// Private constructor and destructor
+Renderer::Renderer() {
+    // Private constructor to enforce static usage
 }
 
 Renderer::~Renderer() {
-
+    // Private destructor to enforce static usage
 }
 
-bool Renderer::initialize(int width, int height) {
-    viewportWidth = width;
-    viewportHeight = height;
+bool Renderer::initialize(const RendererOptions& options) {
+    if (s_initialized) {
+        std::cerr << "Renderer already initialized" << std::endl;
+        return true;
+    }
 
-    if (!styleShaderManager->initialize()) {
+    s_viewportWidth = options.width;
+    s_viewportHeight = options.height;
+
+    // Initialize GLFW and OpenGL here
+    // ...
+
+    s_styleShaderManager = std::make_unique<StyleShaderManager>();
+    if (!s_styleShaderManager->initialize()) {
         std::cerr << "Failed to initialize style shader manager" << std::endl;
         return false;
     }
 
-    styleShaderManager->applyStyle(StyleShader::Style::DEFAULT);
+    s_styleShaderManager->applyStyle(StyleShader::Style::DEFAULT);
 
     setupRenderState();
 
+    s_initialized = true;
     return true;
 }
 
-void Renderer::resize(int width, int height) {
-    viewportWidth = width;
-    viewportHeight = height;
-
-    glViewport(0, 0, width, height);
-}
-
-void Renderer::setCamera(std::shared_ptr<Camera> camera) {
-    this->camera = camera;
-}
-
-void Renderer::render() {
-    if (!camera) {
-        std::cerr << "No camera set for rendering" << std::endl;
+void Renderer::shutdown() {
+    if (!s_initialized) {
         return;
     }
 
-    glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+    s_styleShaderManager.reset();
+    // Cleanup GLFW and OpenGL here
+    // ...
+
+    s_initialized = false;
+}
+
+bool Renderer::isInitialized() {
+    return s_initialized;
+}
+
+std::string Renderer::getVersion() {
+    return Version::toString();
+}
+
+void Renderer::renderScene(const Scene& scene, const Camera& camera) {
+    if (!s_initialized) {
+        std::cerr << "Renderer not initialized" << std::endl;
+        return;
+    }
+
+    glClearColor(s_clearColor[0], s_clearColor[1], s_clearColor[2], s_clearColor[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    renderScene();
+    // Set up camera and scene for rendering
+    // ...
+
+    renderSceneInternal();
 
     applyPostProcessing();
 }
 
+void Renderer::resize(int width, int height) {
+    s_viewportWidth = width;
+    s_viewportHeight = height;
+
+    glViewport(0, 0, width, height);
+}
+
 void Renderer::setClearColor(float r, float g, float b, float a) {
-    clearColor[0] = r;
-    clearColor[1] = g;
-    clearColor[2] = b;
-    clearColor[3] = a;
+    s_clearColor[0] = r;
+    s_clearColor[1] = g;
+    s_clearColor[2] = b;
+    s_clearColor[3] = a;
 }
 
 bool Renderer::setShaderStyle(const std::string& styleName) {
-    return styleShaderManager->applyStyleByName(styleName);
+    if (!s_initialized || !s_styleShaderManager) {
+        return false;
+    }
+    return s_styleShaderManager->applyStyleByName(styleName);
 }
 
 bool Renderer::setShaderStyleByIndex(int index) {
-    return styleShaderManager->applyStyleByIndex(index);
+    if (!s_initialized || !s_styleShaderManager) {
+        return false;
+    }
+    return s_styleShaderManager->applyStyleByIndex(index);
 }
 
-std::string Renderer::getCurrentStyleName() const {
-    return styleShaderManager->getCurrentStyleName();
+std::string Renderer::getCurrentStyleName() {
+    if (!s_initialized || !s_styleShaderManager) {
+        return "";
+    }
+    return s_styleShaderManager->getCurrentStyleName();
 }
 
-std::vector<std::string> Renderer::getAvailableStyles() const {
-    return styleShaderManager->getAvailableStyleNames();
+std::vector<std::string> Renderer::getAvailableStyles() {
+    if (!s_initialized || !s_styleShaderManager) {
+        return {};
+    }
+    return s_styleShaderManager->getAvailableStyleNames();
 }
 
-std::vector<std::string> Renderer::getAvailableStyleDescriptions() const {
-    return styleShaderManager->getAvailableStyleDescriptions();
-}
-
-std::vector<StyleShaderManager::StyleParameter> Renderer::getCurrentStyleParameters() const {
-    return styleShaderManager->getCurrentStyleParameters();
-}
-
-bool Renderer::setStyleParameter(const std::string& paramName, float value) {
-    return styleShaderManager->setStyleParameter(paramName, value);
-}
-
-void Renderer::resetStyleParameters() {
-    styleShaderManager->resetStyleParameters();
+std::vector<std::string> Renderer::getAvailableStyleDescriptions() {
+    if (!s_initialized || !s_styleShaderManager) {
+        return {};
+    }
+    return s_styleShaderManager->getAvailableStyleDescriptions();
 }
 
 void Renderer::setupRenderState() {
-
     glEnable(GL_DEPTH_TEST);
-
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-
 }
 
-void Renderer::renderScene() {
+void Renderer::renderSceneInternal() {
+    if (!s_styleShaderManager) {
+        return;
+    }
 
-    auto shader = styleShaderManager->getCurrentShader();
+    auto shader = s_styleShaderManager->getCurrentShader();
     if (!shader) {
         std::cerr << "No active shader for rendering" << std::endl;
         return;
@@ -117,18 +153,23 @@ void Renderer::renderScene() {
 
     shader->use();
 
-    auto viewMatrix = camera->getViewMatrix();
-    auto projMatrix = camera->getProjectionMatrix();
-
-    shader->setMat4("view", viewMatrix);
-    shader->setMat4("projection", projMatrix);
-    shader->setVec3("viewPos", camera->getPosition());
-
+    // This part needs to be updated to use the camera passed to renderScene
+    // auto viewMatrix = camera->getViewMatrix();
+    // auto projMatrix = camera->getProjectionMatrix();
+    // shader->setMat4("view", viewMatrix);
+    // shader->setMat4("projection", projMatrix);
+    // shader->setVec3("viewPos", camera->getPosition());
 }
 
 void Renderer::applyPostProcessing() {
-    auto currentStyle = styleShaderManager->getCurrentStyle();
-    if (currentStyle == StyleShader::Style::PIXEL_ART) {
+    if (!s_styleShaderManager) {
+        return;
+    }
 
+    auto currentStyle = s_styleShaderManager->getCurrentStyle();
+    if (currentStyle == StyleShader::Style::PIXEL_ART) {
+        // Apply pixel art post-processing
     }
 }
+
+} // namespace ElementalRenderer
