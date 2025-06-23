@@ -5,6 +5,11 @@
 A simple lightweight rendering library for C++ that provides essential 3D graphics capabilities with minimal overhead.
 
 ## Overview
+# ElementalRenderer
+
+A simple lightweight rendering library for C++ that provides essential 3D graphics capabilities with minimal overhead.
+
+## Overview
 
 ElementalRenderer is designed to be an easy-to-use yet powerful rendering library for C++ applications. It provides core rendering functionality while maintaining a small footprint and efficient performance.
 
@@ -20,6 +25,9 @@ ElementalRenderer is designed to be an easy-to-use yet powerful rendering librar
 - **Texture Handling**: Load and apply textures to 3D objects
 - **Customizable Lighting Models**: Easily swap between Oren-Nayar, Cook-Torrance, and custom BRDFs
 - **Heuristic Render Graph**: Automatically builds an optimized dependency graph of render passes without manual setup
+- **ImGui Integration**: Clean, immediate-mode interface for tweaking parameters and visualizing data
+- **GPU Profiling**: Real-time performance metrics and visualization tools
+- **Custom Node SDK**: Create your own shader nodes using C++ or JSON definitions
 
 ## Lighting Models
 
@@ -54,8 +62,44 @@ The shader editor supports various node types:
 - Input parameters (Position, Normal, UV, etc.)
 - Output parameters (Color, Normal, Emission, etc.)
 
-
 The shader editor provides a powerful way to create complex shaders without writing code, while still allowing advanced users to fine-tune the generated code.
+
+## Custom Node Authoring SDK
+
+ElementalRenderer now includes a powerful SDK for creating custom shader nodes:
+
+- **JSON-based Nodes**: Create simple nodes using JSON definitions
+- **C++ Nodes**: Implement complex nodes with full access to the shader system
+- **Hot Reloading**: JSON nodes can be modified and reloaded at runtime
+- **Comprehensive API**: Well-documented interface for node creation
+- **Example Nodes**: Sample implementations to get you started
+
+The Custom Node SDK makes it easy to extend the shader editor with your own specialized functionality.
+
+## ImGui Integration
+
+ElementalRenderer now features a comprehensive ImGui integration for creating user interfaces:
+
+- **Material Editor**: Tweak material properties with sliders and color pickers
+- **Scene Hierarchy**: Navigate and modify scene objects
+- **Performance Metrics**: Real-time display of frame times and GPU usage
+- **Render Graph Visualization**: Interactive view of the render pipeline
+- **Shader Graph Editor**: Visual editing of shader graphs
+- **Dockable Windows**: Flexible UI layout with dockable panels
+
+The ImGui integration provides a modern, immediate-mode interface for interacting with all aspects of the renderer.
+
+## GPU Profiling and Debug Tools
+
+ElementalRenderer includes comprehensive profiling and debugging tools:
+
+- **Frame Timing**: Detailed breakdown of CPU and GPU time per frame
+- **Render Pass Profiling**: Performance metrics for each render pass
+- **GPU Memory Usage**: Track memory allocation and usage
+- **Render Graph Visualization**: Visual representation of the render pipeline
+- **Resource Tracking**: Monitor resource creation, usage, and destruction
+
+These tools help identify performance bottlenecks and optimize rendering code.
 
 ## Heuristic Render Graph
 
@@ -67,14 +111,35 @@ ElementalRenderer includes a Heuristic Render Graph system that automatically bu
 - **Flexible Pass Definition**: Define custom render passes with lambda functions
 - **Cycle Detection**: Detects and reports dependency cycles
 
-The render graph system eliminates the need for manual setup of render pass dependencies, making it easier to create complex rendering pipelines
+The render graph system eliminates the need for manual setup of render pass dependencies, making it easier to create complex rendering pipelines.
 
-The system automatically determines that the GeometryPass depends on the ShadowPass because it reads from the "ShadowMap" resource that ShadowPass writes to, basically ensuring they execute in the correct order.
+The system automatically determines that the GeometryPass depends on the ShadowPass because it reads from the "ShadowMap" resource that ShadowPass writes to, ensuring they execute in the correct order.
+
+## Demo Scenes
+
+ElementalRenderer comes with several demo scenes showcasing different features:
+
+- **Shadow Mapping**: Demonstrates shadow techniques
+- **PBR**: Shows physically-based rendering with various materials
+- **Post-Processing**: Illustrates post-processing effects
+- **Custom BRDF**: Examples of custom lighting models
+- **Node Shader**: Demonstrates the node-based shader system
+
+These demos provide practical examples of how to use the various features of ElementalRenderer.
+
+## Documentation
+
+Comprehensive documentation is available:
+
+- **Getting Started Guide**: Quick introduction to using ElementalRenderer
+- **API Reference**: Detailed documentation of all classes and functions
+- **Tutorials**: Step-by-step guides for common tasks
+- **Examples**: Code samples demonstrating specific features
 
 ## Requirements
 
 - C++17 or later
-- CMake 3.10 or later
+- CMake 3.14 or later
 - GPU with OpenGL support
 
 ## Dependencies
@@ -83,4 +148,62 @@ ElementalRenderer uses the following third-party libraries:
 - OpenGL
 - GLFW (for window management)
 - GLM (OpenGL Mathematics)
+- ImGui (for user interface)
 - stb_image (for texture loading)
+
+## Getting Started
+
+See the [Getting Started Guide](docs/GettingStarted.md) for instructions on how to set up and use ElementalRenderer in your project.
+
+# CHANGELOG.md
+
+## Version 0.2.0 (Current)
+
+### Added
+- **ImGui Integration**
+    - Added comprehensive ImGui-based user interface
+    - Material editor with real-time parameter tweaking
+    - Scene hierarchy browser
+    - Render graph visualization
+    - Shader graph editor integration
+
+- **GPU Profiling and Debug Tools**
+    - Frame timing metrics
+    - Render pass profiling
+    - GPU memory usage tracking
+    - Resource visualization
+    - Performance overlay
+
+- **Custom Node Authoring SDK**
+    - JSON-based node definition system
+    - C++ API for complex node implementation
+    - Hot-reloading support for rapid iteration
+    - Comprehensive documentation and examples
+
+- **Documentation**
+    - Added comprehensive getting started guide
+    - Created API reference documentation
+    - Added tutorials for common tasks
+    - Included code samples for all major features
+
+- **Demo Scenes**
+    - Shadow mapping demonstration
+    - PBR material showcase
+    - Post-processing effects examples
+    - Custom BRDF implementation samples
+    - Node-based shader examples
+
+### Improved
+- Enhanced shader editor with better node organization
+- Optimized render graph performance
+- Improved PBR lighting model accuracy
+- Better texture handling and memory management
+- More intuitive camera controls
+- Expanded material system capabilities
+
+### Fixed
+- Corrected shadow mapping artifacts
+- Fixed memory leaks in resource management
+- Resolved threading issues in render pipeline
+- Addressed shader compilation errors on some platforms
+- Fixed JSON parsing in configuration files
